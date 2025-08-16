@@ -1,0 +1,26 @@
+name: Notify Revolt on Push
+
+on:
+  push:
+    branches:
+      - main  # or the branch you want to track
+  release:
+    types: [published]
+
+jobs:
+  revolt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send commit message to Revolt
+        if: github.event_name == 'push'
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{\"content\": \"📦 New commit pushed to Ellixpi/distro by ${GITHUB_ACTOR}: '${{ github.event.head_commit.message }}'\"}" \
+          https://beta.revolt.chat/api/webhooks/01K2SQ104N5ET9C98TSFHE0EFJ/F4F5iPExlw5go3jm_MXI6jO4R5za14ds46w_iMtwvGLOEQlEtIARg4P-EDuke0OI
+
+      - name: Send release info to Revolt
+        if: github.event_name == 'release'
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{\"content\": \"🚀 New release published: '${{ github.event.release.tag_name }}' - ${{ github.event.release.name }}\"}" \
+          https://beta.revolt.chat/api/webhooks/01K2SQ104N5ET9C98TSFHE0EFJ/F4F5iPExlw5go3jm_MXI6jO4R5za14ds46w_iMtwvGLOEQlEtIARg4P-EDuke0OI
